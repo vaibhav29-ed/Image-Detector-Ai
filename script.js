@@ -19,8 +19,8 @@ document.getElementById('uploadButton').addEventListener('click', async () => {
     reader.readAsDataURL(file);
 
     // Imagga API credentials
-    const apiKey = 'YOUR_API_KEY';
-    const apiSecret = 'YOUR_API_SECRET';
+    const apiKey = 'acc_7e6b853ab8ac397';
+    const apiSecret = '3c92c3aaeff842a8eb2cb3bc90350516';
     const authHeader = 'Basic ' + btoa(`${apiKey}:${apiSecret}`);
 
     // Prepare data for upload
