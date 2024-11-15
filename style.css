@@ -36,19 +36,24 @@ body > h1{
     margin-bottom: 24px;
 }
 
-button{
-    padding: 8px 14px;
+button {
+    padding: 12px 20px; 
+    font-size: 16px; 
     color: #fff;
-    background-color: #27292e;
-    border: none;
+    background: linear-gradient(145deg, #1c1c1e, #3a3a3d); 
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 10px;
+    backdrop-filter: blur(10px); 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
-button:hover{
-    background-color: #d5224e;
+button:hover {
+    background: linear-gradient(145deg, #3a3a3d, #1c1c1e);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
 }
+
 
 .upload-container .buttons{
     display: flex;
