@@ -1,7 +1,7 @@
-// Set the number of tags to display per page
+
 const tagsPerPage = 20;
 
-// Event listener for the upload button
+
 document.getElementById('uploadButton').addEventListener('click', async () => {
     // Elements and file handling
     const fileInput = document.getElementById('imageInput');
@@ -10,10 +10,10 @@ document.getElementById('uploadButton').addEventListener('click', async () => {
     const uploadModal = document.getElementById('uploadModal');
     const uploadProgress = document.getElementById('uploadProgress');
 
-    // If no file is selected, show a toast message
+
     if (!file) return showToast('Please select an image file first.');
 
-    // Preview the selected image
+    
     const reader = new FileReader();
     reader.onload = e => imagePreview.src = e.target.result;
     reader.readAsDataURL(file);
@@ -23,16 +23,16 @@ document.getElementById('uploadButton').addEventListener('click', async () => {
     const apiSecret = '3c92c3aaeff842a8eb2cb3bc90350516';
     const authHeader = 'Basic ' + btoa(`${apiKey}:${apiSecret}`);
 
-    // Prepare data for upload
+    
     const formData = new FormData();
     formData.append('image', file);
 
     try {
-        // Show upload modal and reset progress bar
+       
         uploadModal.style.display = 'block';
         uploadProgress.style.width = '0%';
 
-        // Upload image to Imagga
+       
         const uploadResponse = await fetch('https://api.imagga.com/v2/uploads', {
             method: 'POST',
             headers: { 'Authorization': authHeader },
@@ -41,13 +41,13 @@ document.getElementById('uploadButton').addEventListener('click', async () => {
 
         if (!uploadResponse.ok) throw new Error('Upload failed.');
 
-        // Track upload progress
+      
         const contentLength = +uploadResponse.headers.get('Content-Length');
         const reader = uploadResponse.body.getReader();
         let receivedLength = 0;
         let chunks = [];
 
-        // Read response stream and update progress
+      
         while (true) {
             const { done, value } = await reader.read();
             if (done) break;
@@ -56,7 +56,7 @@ document.getElementById('uploadButton').addEventListener('click', async () => {
             uploadProgress.style.width = `${(receivedLength / contentLength) * 100}%`;
         }
 
-        // Decode and parse upload response
+     
         const responseArray = new Uint8Array(receivedLength);
         let position = 0;
         for (const chunk of chunks) {
@@ -67,36 +67,35 @@ document.getElementById('uploadButton').addEventListener('click', async () => {
         const text = new TextDecoder('utf-8').decode(responseArray);
         const { result: { upload_id } } = JSON.parse(text);
 
-        // Fetch color and tag analysis from Imagga
         const [colorResult, tagsResult] = await Promise.all([
             fetch(`https://api.imagga.com/v2/colors?image_upload_id=${upload_id}`, { headers: { 'Authorization': authHeader } }).then(res => res.json()),
             fetch(`https://api.imagga.com/v2/tags?image_upload_id=${upload_id}`, { headers: { 'Authorization': authHeader } }).then(res => res.json()),
         ]);
 
-        // Display the results
+        
         displayColors(colorResult.result.colors);
         displayTags(tagsResult.result.tags);
     } catch (error) {
         console.error('Error:', error);
         showToast('An error occurred while processing the image!');
     } finally {
-        // Hide the upload modal after processing
+        
         uploadModal.style.display = 'none';
     }
 });
 
-// Function to display color analysis results
+
 const displayColors = colors => {
     const colorsContainer = document.querySelector('.colors-container');
     colorsContainer.innerHTML = ''; // Clear previous results
 
-    // If no colors are found, show an error message
+  
     if (![colors.background_colors, colors.foreground_colors, colors.image_colors].some(arr => arr.length)) {
         colorsContainer.innerHTML = '<p class="error">Nothing to show...</p>';
         return;
     }
 
-    // Generate HTML sections for different color types
+    
     const generateColorSection = (title, colorData) => {
         return `
 
@@ -118,12 +117,12 @@ const displayColors = colors => {
         `;
     };
 
-    // Append generated color sections to the container
+    
     colorsContainer.innerHTML += generateColorSection('Background Colors', colors.background_colors);
     colorsContainer.innerHTML += generateColorSection('Foreground Colors', colors.foreground_colors);
     colorsContainer.innerHTML += generateColorSection('Image Colors', colors.image_colors);
 
-    // Add click functionality to copy color code to clipboard
+    
     document.querySelectorAll('.colors-container .result-item').forEach(item => {
         item.addEventListener('click', () => {
             const colorCode = item.getAttribute('data-color');
@@ -133,7 +132,7 @@ const displayColors = colors => {
 
 };
 
-// Function to display tags with pagination (See More)
+
 let allTags = [];
 let displayedTags = 0;
 
@@ -144,7 +143,7 @@ const displayTags = tags => {
     const seeMoreButton = document.getElementById('seeMoreButton');
     const exportTagsButton = document.getElementById('exportTagsButton');
 
-    // Clear previous tags
+    
     if (resultList) {
         resultList.innerHTML = '';
     } else {
@@ -153,7 +152,7 @@ const displayTags = tags => {
         tagsContainer.insertBefore(resultListContainer, seeMoreButton);
     }
 
-    // Store all tags and initialize displayed tags count
+  
     allTags = tags;
     displayedTags = 0;
 
@@ -186,14 +185,14 @@ const displayTags = tags => {
     exportTagsButton.addEventListener('click', exportTagsToFile);
 };
 
-// Function to export tags to a text file
+
 const exportTagsToFile = () => {
     if (allTags.length === 0) {
         showToast('No tags available to export!');
         return;
     }
 
-    // Convert tags to text and trigger download
+    
     const tagsText = allTags.map(({ tag: { en } }) => en).join('\n');
     const blob = new Blob([tagsText], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
@@ -204,7 +203,7 @@ const exportTagsToFile = () => {
     URL.revokeObjectURL(url);
 };
 
-// Function to show toast messages
+
 const showToast = message => {
     const toast = document.createElement('div');
     toast.className = 'toast';
